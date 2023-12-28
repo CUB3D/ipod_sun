@@ -12,6 +12,7 @@ By using a malformed OTF font, we can trigger a stack overflow in CFF parsing. S
 
 ### The result
 On the iPod Nano 6th Generation: custom SCSI command added that can dump memory
+
 On the iPod Nano 7th Generation: blind code execution
 
 ## Dependencies
@@ -51,7 +52,9 @@ cargo r --release -- --device=n6g
 ## Usage (n7g, very WIP)
 # WARNING!
 Some devices are not able to boot into DFU, this may be caused by a non-functional battery.
+
 Bad payloads, incorrectly packed firmware and many other causes CAN and HAVE caused permanent bricks.
+
 You have been warned.
 
 We don't have a usable memory read for the n7g, so currently we are limited to blind code execution. No payload is provided. Here be dragons
@@ -69,6 +72,7 @@ Base.ttf is one of the payloads from [star](https://github.com/comex/star), used
 
 # Thanks
 q3k for the SCSI handler example and for [wInd3x](https://github.com/freemyipod/wInd3x)
+
 760ceb3b9c0ba4872cadf3ce35a7a494 for [ipodhax](https://github.com/760ceb3b9c0ba4872cadf3ce35a7a494/ipodhax) which inspired a lot of the firmware un/packing code
 
 
