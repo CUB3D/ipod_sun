@@ -1,0 +1,8 @@
+/target
+.idea
+*.cff
+*.otf
+*.img1
+*.MSE
+*.ttf
+.DS_Store

@@ -1,0 +1,5 @@
+[toolchain]
+channel = "nightly-2023-12-20"
+targets = ["thumbv6m-none-eabi", "aarch64-apple-darwin"]
+profile = "minimal"
+components = ["rustfmt", "rust-src", "clippy"]
