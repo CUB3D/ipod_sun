@@ -6,3 +6,5 @@
 *.MSE
 *.ttf
 .DS_Store
+build.sh
+*.bin
