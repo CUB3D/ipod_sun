@@ -1,5 +1,5 @@
 [package]
-name = "scsi_dumper"
+name = "scsi_decrypter"
 version = "0.1.0"
 edition = "2021"
 
