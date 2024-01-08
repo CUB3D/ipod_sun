@@ -7,7 +7,7 @@ mod mse;
 mod payload;
 
 use crate::exploit::create_cff;
-use crate::payload::exploit_config::ExploitConfigN6G;
+use crate::payload::exploit_config::{ExploitConfigN6G, ExploitConfigN7G};
 use anyhow::anyhow;
 use clap::{Parser, ValueEnum};
 use std::process::Command;
@@ -37,7 +37,10 @@ fn main() -> anyhow::Result<()> {
 
     // Generate exploit font
     info!("Building CFF exploit");
-    let bytes = create_cff::<ExploitConfigN6G>()?;
+    let bytes = match args.device {
+        Device::N6G => create_cff::<ExploitConfigN6G>()?,
+        Device::N7G => create_cff::<ExploitConfigN7G>()?,
+    };
 
     std::fs::write("./in-cff.bin", bytes)?;
 

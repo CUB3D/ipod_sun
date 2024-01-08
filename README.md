@@ -11,9 +11,7 @@ By swapping the 'disk' and 'osos' sections in a firmware image, the iPod will bo
 By using a malformed OTF font, we can trigger a stack overflow in CFF parsing. See `src/exploit.rs` for details 
 
 ### The result
-On the iPod Nano 6th Generation: custom SCSI command added that can dump memory
-
-On the iPod Nano 7th Generation: blind code execution
+Custom SCSI command added that can read/write memory and execute arbitrary code.
 
 ## Dependencies
 For python3:
@@ -33,10 +31,20 @@ helpers/comic.otf -> comic.ttf taken from Windows 10, converted to OTF using fon
 # helpers/comic.otf MD5 2bc0050ee3171ab80d8aa1b9ee262b48
 
 Firmware-golden.MSE -> MSE file from n6g firmware ipsw, MD5 25bcdf992d580c2c5041d98ce63a9616
-Firmware-golden-n7g.MSE -> MSE file from n7g firmware ipsw, MD5 f7dd910f81496d6a703768a08003fabf
+Firmware-golden-n7g.MSE -> MSE file from n7g firmware (1.1.2) ipsw, MD5 10e052dca0f7823ff0d2d6a100148712
 ```
 
-## Usage (n6g)
+## Supported devices:
+- iPod Nano 6th Generation
+- iPod Nano 7th Generation (Mid 2015)
+
+
+# WARNING!
+Some devices are not able to boot into DFU, this may be caused by a non-functional battery.
+
+Bad payloads, incorrectly packed firmware and many other causes CAN and HAVE caused permanent bricks.
+
+## Usage
 ```shell
 # First build the payload
 cd scsi_shellcode
@@ -45,24 +53,6 @@ arm-none-eabi-objcopy -O binary target/thumbv6m-none-eabi/release/scsi_shellcode
 
 # Now build the patched firmware
 cargo r --release -- --device=n6g
-
-# Flash Firmware-repack.MSE over DFU
-```
-
-## Usage (n7g, very WIP)
-# WARNING!
-Some devices are not able to boot into DFU, this may be caused by a non-functional battery.
-
-Bad payloads, incorrectly packed firmware and many other causes CAN and HAVE caused permanent bricks.
-
-You have been warned.
-
-We don't have a usable memory read for the n7g, so currently we are limited to blind code execution. No payload is provided. Here be dragons
-```shell
-# Write a payload and change `src/exploit.rs` to use it
-
-# Build the firmware
-cargo r --release -- --device=n7g
 
 # Flash Firmware-repack.MSE over DFU
 ```

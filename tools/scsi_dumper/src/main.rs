@@ -5,12 +5,15 @@ use std::process::Command;
 use std::process::Stdio;
 
 fn main() -> Result<(), Box<dyn Error>> {
-    const COUNT: u32 = 0x40_0000 / 0x200;
+    sudo::escalate_if_needed()?;
+    const START_ADDR: u32 = 0x0800_0000;
+    const END_ADDR: u32 = 0x0b00_0000;
 
+    const CHUNK_SIZE: u32 = 512;
     let mut full_read = Vec::new();
 
     let mut addr: u32 = 0x0880_0000;
-    for _ in progression::bar(0..COUNT) {
+    for _ in progression::bar(0..((END_ADDR - START_ADDR) / CHUNK_SIZE)) {
         //println!("Reading {addr:08x}={:08x}, prog", addr+0x200);
         let b: [u8; 4] = addr.to_be_bytes();
 
@@ -20,9 +23,9 @@ fn main() -> Result<(), Box<dyn Error>> {
             .arg("-o")
             .arg("out.bin")
             .arg("-r")
-            .arg("64k")
+            .arg(&format!("{CHUNK_SIZE}"))
             .arg("-v")
-            .arg("/dev/sda")
+            .arg("/dev/sdc")
             .arg("c6")
             .arg("96")
             .arg("02")

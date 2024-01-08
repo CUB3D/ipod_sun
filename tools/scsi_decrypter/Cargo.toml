@@ -7,3 +7,4 @@ edition = "2021"
 
 [dependencies]
 progression = "0.1.15"
+sudo = "0.6.0"
