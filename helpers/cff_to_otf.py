@@ -10,7 +10,7 @@ with open("./in-cff.bin", "rb") as input_font:
     x = cffLib.CFFFontSet()
     x.decompile(input_font, None, isCFF2=False)
 
-    tt = ttLib.TTFont("./helpers/comic.otf")
+    tt = ttLib.TTFont("./helpers/viafont/viafont_converted.otf")
 
     x[0].charset = tt["CFF "].cff[0].charset
 

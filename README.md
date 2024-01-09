@@ -25,11 +25,6 @@ arm-none-eabi-gcc
 ```
 Some extra files are needed:
 ```
-helpers/comic.otf -> comic.ttf taken from Windows 10, converted to OTF using fonttools
-# Note that any other OTF font that doesn't bootloop with a disk swap should work
-# comic.ttf (original) MD5 cb5a21a92d77658df1beee4d51b72777
-# helpers/comic.otf MD5 2bc0050ee3171ab80d8aa1b9ee262b48
-
 Firmware-golden.MSE -> MSE file from n6g firmware ipsw, MD5 25bcdf992d580c2c5041d98ce63a9616
 Firmware-golden-n7g.MSE -> MSE file from n7g firmware (1.1.2) ipsw, MD5 10e052dca0f7823ff0d2d6a100148712
 ```
@@ -59,6 +54,9 @@ cargo r --release -- --device=n6g
 
 # Attribution
 Base.ttf is one of the payloads from [star](https://github.com/comex/star), used as a CFF template
+
+helpers/viafont/original sourced from [here](http://www.publicdomainfiles.com/show_file.php?id=13949894425072)
+
 
 # Thanks
 q3k for the SCSI handler example and for [wInd3x](https://github.com/freemyipod/wInd3x)

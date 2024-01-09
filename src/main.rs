@@ -44,9 +44,10 @@ fn main() -> anyhow::Result<()> {
 
     std::fs::write("./in-cff.bin", bytes)?;
 
+    info!("Converting font to OTF");
     Command::new("python")
         .arg("./helpers/cff_to_otf.py")
-        .output()
+        .status()
         .unwrap();
 
     std::fs::remove_file("./in-cff.bin")?;
