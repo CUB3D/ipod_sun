@@ -23,11 +23,6 @@ Native:
 ```
 arm-none-eabi-gcc
 ```
-Some extra files are needed:
-```
-Firmware-golden.MSE -> MSE file from n6g firmware ipsw, MD5 25bcdf992d580c2c5041d98ce63a9616
-Firmware-golden-n7g.MSE -> MSE file from n7g firmware (1.1.2) ipsw, MD5 10e052dca0f7823ff0d2d6a100148712
-```
 
 ## Supported devices:
 - iPod Nano 6th Generation
@@ -47,7 +42,7 @@ cargo b --release
 arm-none-eabi-objcopy -O binary target/thumbv6m-none-eabi/release/scsi_shellcode scsi-stub.bin
 
 # Now build the patched firmware
-cargo r --release -- --device=n6g
+cargo r --release -- --device=nano7-refresh
 
 # Flash Firmware-repack.MSE over DFU
 ```
