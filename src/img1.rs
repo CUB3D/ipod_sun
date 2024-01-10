@@ -55,8 +55,8 @@ pub fn img1_parse(orig_data: &[u8], device: &Device) -> Img1 {
     let (b, body) = take_n(b, body_len as usize);
 
     let cert = match device {
-        Device::N6G => Vec::new(),
-        Device::N7G => b.to_vec(),
+        Device::Nano6 => Vec::new(),
+        Device::Nano7Refresh => b.to_vec(),
     };
 
     Img1 {

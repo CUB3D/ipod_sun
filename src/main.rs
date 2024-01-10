@@ -10,13 +10,17 @@ use crate::exploit::create_cff;
 use crate::payload::exploit_config::{ExploitConfigN6G, ExploitConfigN7G};
 use anyhow::anyhow;
 use clap::{Parser, ValueEnum};
+use isahc::ReadResponseExt;
+use std::io::{Cursor, Read};
+use std::path::Path;
 use std::process::Command;
 use tracing::{info, Level};
+use zip::ZipArchive;
 
 #[derive(Debug, ValueEnum, Copy, Clone)]
 pub enum Device {
-    N6G,
-    N7G,
+    Nano6,
+    Nano7Refresh,
 }
 
 /// Simple program to greet a person
@@ -30,7 +34,7 @@ struct Args {
 
 fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt()
-        .with_max_level(Level::TRACE)
+        .with_max_level(Level::DEBUG)
         .init();
 
     let args = Args::parse();
@@ -38,8 +42,8 @@ fn main() -> anyhow::Result<()> {
     // Generate exploit font
     info!("Building CFF exploit");
     let bytes = match args.device {
-        Device::N6G => create_cff::<ExploitConfigN6G>()?,
-        Device::N7G => create_cff::<ExploitConfigN7G>()?,
+        Device::Nano6 => create_cff::<ExploitConfigN6G>()?,
+        Device::Nano7Refresh => create_cff::<ExploitConfigN7G>()?,
     };
 
     std::fs::write("./in-cff.bin", bytes)?;
@@ -55,10 +59,28 @@ fn main() -> anyhow::Result<()> {
     std::fs::remove_file("./out-otf.bin")?;
 
     info!("Unpacking MSE");
-    let mut mse = if let Device::N6G = args.device {
-        mse::unpack("./Firmware-golden.MSE", &args.device)
+    let mut mse = if let Device::Nano6 = args.device {
+        if !Path::new("./Firmware-36B10147.MSE").try_exists()? {
+            let mut ipsw = isahc::get("http://appldnld.apple.com/iPod/SBML/osx/bundles/041-1920.20111004.CpeEw/iPod_1.2_36B10147.ipsw")?;
+            let mut zip = ZipArchive::new(Cursor::new(ipsw.bytes().unwrap()))?;
+            let mut mse = zip.by_name("Firmware.MSE")?;
+            let mut out = Vec::new();
+            mse.read_to_end(&mut out)?;
+            std::fs::write("./Firmware-36B10147.MSE", &out)?;
+        }
+
+        mse::unpack("./Firmware-36B10147.MSE", &args.device)
     } else {
-        mse::unpack("./Firmware-golden-n7g.MSE", &args.device)
+        if !Path::new("./Firmware-39A10023.MSE").try_exists()? {
+            let mut ipsw = isahc::get("http://appldnld.apple.com/ipod/sbml/osx/bundles/031-59796-20160525-8E6A5D46-21FF-11E6-89D1-C5D3662719FC/iPod_1.1.2_39A10023.ipsw")?;
+            let mut zip = ZipArchive::new(Cursor::new(ipsw.bytes().unwrap()))?;
+            let mut mse = zip.by_name("Firmware.MSE")?;
+            let mut out = Vec::new();
+            mse.read_to_end(&mut out)?;
+            std::fs::write("./Firmware-39A10023.MSE", &out)?;
+        }
+
+        mse::unpack("./Firmware-39A10023.MSE", &args.device)
     };
 
     let rsrc = mse
@@ -95,7 +117,7 @@ fn main() -> anyhow::Result<()> {
     // Disk swap
     info!("Doing disk swap");
 
-    if let Device::N6G = args.device {
+    if let Device::Nano6 = args.device {
         mse_out[0x5004..][..4].copy_from_slice(b"soso");
         mse_out[0x5144..][..4].copy_from_slice(b"ksid");
     } else {

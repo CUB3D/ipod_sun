@@ -104,8 +104,8 @@ pub fn unpack(path: &str, device: &Device) -> Mse {
         );
 
         let data_len = match device {
-            Device::N6G => (length + 0x800) as usize,
-            Device::N7G => length as usize,
+            Device::Nano6 => (length + 0x800) as usize,
+            Device::Nano7Refresh => length as usize,
         };
 
         let section_header = &firm_data[dev_offset as usize..][..0x1000];
