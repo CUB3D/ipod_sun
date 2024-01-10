@@ -36,12 +36,7 @@ Bad payloads, incorrectly packed firmware and many other causes CAN and HAVE cau
 
 ## Usage
 ```shell
-# First build the payload
-cd scsi_shellcode
-cargo b --release
-arm-none-eabi-objcopy -O binary target/thumbv6m-none-eabi/release/scsi_shellcode scsi-stub.bin
-
-# Now build the patched firmware
+# Build the patched firmware
 cargo r --release -- --device=nano7-refresh
 
 # Flash Firmware-repack.MSE over DFU

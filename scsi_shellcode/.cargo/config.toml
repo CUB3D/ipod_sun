@@ -1,6 +1,5 @@
 [build]
 target = "thumbv6m-none-eabi"
-rustflags = ["-C", "link-arg=-nostdlib", "-C", "link-arg=-static", "-C", "link-arg=-Wl,-Tshellcode.ld"]
 
 [target.thumbv6m-none-eabi]
 linker = "arm-none-eabi-gcc"
