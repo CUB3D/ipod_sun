@@ -1,0 +1,9 @@
+[build]
+target = "./armv6-none-eabi.json"
+
+[target.armv6-none-eabi]
+linker = "arm-none-eabi-gcc"
+ar = "arm-none-eabi-ar"
+
+[unstable]
+build-std = ["core"]

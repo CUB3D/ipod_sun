@@ -3,6 +3,7 @@ pub mod exploit_config;
 pub mod payload_builder;
 //mod binary_search;
 //mod string_leak;
+pub mod nanoboot;
 
 use crate::payload::exploit_config::ExploitConfig;
 use crate::payload::payload_builder::CffPayloadBuilder;
