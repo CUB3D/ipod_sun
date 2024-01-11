@@ -46,7 +46,6 @@ fn main() {
     }
 
     {
-        //std::fs::remove_dir_all("./nanoboot/target").unwrap();
         let _ = std::fs::remove_file("./nanoboot/nanoboot.bin");
 
         assert!(Command::new("cargo")
