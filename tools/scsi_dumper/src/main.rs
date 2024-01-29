@@ -1,3 +1,4 @@
+use std::env::args;
 use std::error::Error;
 use std::time::Duration;
 
@@ -6,14 +7,21 @@ use std::process::Stdio;
 
 fn main() -> Result<(), Box<dyn Error>> {
     sudo::escalate_if_needed()?;
-    const START_ADDR: u32 = 0x0800_0000;
-    const END_ADDR: u32 = 0x0b00_0000;
+
+    if args().len() != 4 {
+        println!("cargo r --release -- <start> <size> <out_file>");
+        return Ok(());
+    }
+
+    let start = u32::from_str_radix(&args().nth(1).unwrap()[2..], 16)?;
+    let size = u32::from_str_radix(&args().nth(2).unwrap()[2..], 16)?;
+    let out_file = args().nth(3).unwrap();
 
     const CHUNK_SIZE: u32 = 512;
     let mut full_read = Vec::new();
 
-    let mut addr: u32 = 0x0880_0000;
-    for _ in progression::bar(0..((END_ADDR - START_ADDR) / CHUNK_SIZE)) {
+    let mut addr: u32 = start;
+    for _ in progression::bar(0..(size / CHUNK_SIZE)) {
         //println!("Reading {addr:08x}={:08x}, prog", addr+0x200);
         let b: [u8; 4] = addr.to_be_bytes();
 
@@ -40,7 +48,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         full_read.extend_from_slice(&chunk);
 
         addr += 0x200;
-        std::fs::write("./full_dump.bin", &full_read).unwrap();
+        std::fs::write(&out_file, &full_read).unwrap();
 
         std::thread::sleep(Duration::from_millis(1));
     }

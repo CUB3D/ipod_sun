@@ -42,6 +42,19 @@ cargo r --release -- --device=nano7-refresh
 # Flash Firmware-repack.MSE over DFU
 ```
 
+## Dumping bootroms
+```shell
+# Enable the VROM clock gates
+sudo sg_raw -o /dev/null -r 512 -vvv /dev/sdc c6 96 04 00 00 00 00
+
+# Dump the rom
+cd tools/scsi_dumper
+cargo r --release -- 0x20000000 0x10000 n7g_bootrom.bin
+```
+
+## Decrypting firmware
+See `tools/scsi_decrypter`
+
 # Attribution
 Base.ttf is one of the payloads from [star](https://github.com/comex/star), used as a CFF template
 

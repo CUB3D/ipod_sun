@@ -74,6 +74,10 @@ pub extern "C" fn custom_handler(resp: *mut ScsiResponse, _lun: *mut u32, pkt: *
             let f = unsafe { core::mem::transmute::<u32, extern "C" fn()>(tgt_addr)};
             f();
         }
+        // Enable VROM access
+        4 => {
+            unsafe { (0x3C500048 as *mut u32).write_volatile(0); }
+        }
         _ => unsafe {
             (*resp).a = 0x70;
             (*resp).ascq = 0x2137;
