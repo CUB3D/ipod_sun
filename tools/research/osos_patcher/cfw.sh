@@ -1,0 +1,1 @@
+cargo r --release && ~/Downloads/ipod/wInd3x/wInd3x cfw run patched.bin

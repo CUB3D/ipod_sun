@@ -1,0 +1,21 @@
+[package]
+name = "patch_payload"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+
+[dependencies]
+
+[profile.dev]
+panic = "abort"
+opt-level = "z"
+lto = true
+codegen-units = 1
+
+[profile.release]
+panic = "abort"
+opt-level = "z"
+lto = true
+codegen-units = 1
