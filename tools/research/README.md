@@ -11,3 +11,12 @@ osos\_patcher: actual tool for injecting patch\_payload?
 n6g\_dumper: Tool for dumping the ram of the n6g over usb descriptors
 
 gib\_cert: Tool for unpacking img1s
+
+diff\_tool: Tool for diffing files
+
+m4a\_patcher: Many failed attempts to exploit m4a bug
+
+m4a\_payload: More failed attempts to exploit m4a bug
+
+mp4\_fuzzer: Fuzzer for mp4 files
+
