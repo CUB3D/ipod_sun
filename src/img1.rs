@@ -57,6 +57,7 @@ pub fn img1_parse(orig_data: &[u8], device: &Device) -> Img1 {
     let cert = match device {
         Device::Nano6 => Vec::new(),
         Device::Nano7Refresh => b.to_vec(),
+        Device::Nano7 => b.to_vec(),
     };
 
     Img1 {

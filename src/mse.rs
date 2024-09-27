@@ -106,11 +106,14 @@ pub fn unpack(path: &str, device: &Device) -> Mse {
         let data_len = match device {
             Device::Nano6 => (length + 0x800) as usize,
             Device::Nano7Refresh => length as usize,
+            Device::Nano7 => length as usize,
         };
 
         let section_header = &firm_data[dev_offset as usize..][..0x1000];
         let section_data = &firm_data[(dev_offset + 0x1000) as usize..];
         let section_data = &section_data[..data_len];
+
+        std::fs::write(&format!("./tmp-{:?}.bin", name.iter().rev().map(|s| *s as char).collect::<String>()), section_data).unwrap();
 
         let sec = MseSection {
             tag,

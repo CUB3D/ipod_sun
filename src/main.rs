@@ -7,7 +7,7 @@ mod mse;
 mod payload;
 
 use crate::exploit::create_cff;
-use crate::payload::exploit_config::{ExploitConfigN6G, ExploitConfigN7G};
+use crate::payload::exploit_config::{ExploitConfigN6G, ExploitConfigN7G, ExploitConfigN7GRefresh};
 use anyhow::anyhow;
 use clap::{Parser, ValueEnum};
 use isahc::ReadResponseExt;
@@ -20,6 +20,7 @@ use zip::ZipArchive;
 #[derive(Debug, ValueEnum, Copy, Clone)]
 pub enum Device {
     Nano6,
+    Nano7,
     Nano7Refresh,
 }
 
@@ -43,7 +44,8 @@ fn main() -> anyhow::Result<()> {
     info!("Building CFF exploit");
     let bytes = match args.device {
         Device::Nano6 => create_cff::<ExploitConfigN6G>()?,
-        Device::Nano7Refresh => create_cff::<ExploitConfigN7G>()?,
+        Device::Nano7Refresh => create_cff::<ExploitConfigN7GRefresh>()?,
+        Device::Nano7 => create_cff::<ExploitConfigN7G>()?,
     };
 
     std::fs::write("./in-cff.bin", bytes)?;
@@ -59,29 +61,54 @@ fn main() -> anyhow::Result<()> {
     std::fs::remove_file("./out-otf.bin")?;
 
     info!("Unpacking MSE");
-    let mut mse = if let Device::Nano6 = args.device {
-        if !Path::new("./Firmware-36B10147.MSE").try_exists()? {
-            let mut ipsw = isahc::get("http://appldnld.apple.com/iPod/SBML/osx/bundles/041-1920.20111004.CpeEw/iPod_1.2_36B10147.ipsw")?;
-            let mut zip = ZipArchive::new(Cursor::new(ipsw.bytes().unwrap()))?;
-            let mut mse = zip.by_name("Firmware.MSE")?;
-            let mut out = Vec::new();
-            mse.read_to_end(&mut out)?;
-            std::fs::write("./Firmware-36B10147.MSE", &out)?;
-        }
+    let mut mse = match args.device {
+        Device::Nano6 => {
+            if !Path::new("./Firmware-36B10147.MSE").try_exists()? {
+                let mut ipsw = isahc::get("http://appldnld.apple.com/iPod/SBML/osx/bundles/041-1920.20111004.CpeEw/iPod_1.2_36B10147.ipsw")?;
+                let mut zip = ZipArchive::new(Cursor::new(ipsw.bytes().unwrap()))?;
+                let mut mse = zip.by_name("Firmware.MSE")?;
+                let mut out = Vec::new();
+                mse.read_to_end(&mut out)?;
+                std::fs::write("./Firmware-36B10147.MSE", &out)?;
+            }
 
-        mse::unpack("./Firmware-36B10147.MSE", &args.device)
-    } else {
-        if !Path::new("./Firmware-39A10023.MSE").try_exists()? {
-            let mut ipsw = isahc::get("http://appldnld.apple.com/ipod/sbml/osx/bundles/031-59796-20160525-8E6A5D46-21FF-11E6-89D1-C5D3662719FC/iPod_1.1.2_39A10023.ipsw")?;
-            let mut zip = ZipArchive::new(Cursor::new(ipsw.bytes().unwrap()))?;
-            let mut mse = zip.by_name("Firmware.MSE")?;
-            let mut out = Vec::new();
-            mse.read_to_end(&mut out)?;
-            std::fs::write("./Firmware-39A10023.MSE", &out)?;
+            mse::unpack("./Firmware-36B10147.MSE", &args.device)
         }
+        Device::Nano7 => {
+            if !Path::new("./Firmware-37A40005.MSE").try_exists()? {
+                let mut ipsw = isahc::get("https://secure-appldnld.apple.com/iPod/SBML/osx/bundles/031-26260-201500810-D2BC269E-3FBC-11E5-885A-067B3A53DB92/iPod_1.0.4_37A40005.ipsw")?;
+                let mut zip = ZipArchive::new(Cursor::new(ipsw.bytes().unwrap()))?;
+                let mut mse = zip.by_name("Firmware.MSE")?;
+                let mut out = Vec::new();
+                mse.read_to_end(&mut out)?;
+                std::fs::write("./Firmware-37A40005.MSE", &out)?;
+            }
 
-        mse::unpack("./Firmware-39A10023.MSE", &args.device)
+            mse::unpack("./Firmware-37A40005.MSE", &args.device)
+        }
+        Device::Nano7Refresh => {
+            if !Path::new("./Firmware-39A10023.MSE").try_exists()? {
+                let mut ipsw = isahc::get("http://appldnld.apple.com/ipod/sbml/osx/bundles/031-59796-20160525-8E6A5D46-21FF-11E6-89D1-C5D3662719FC/iPod_1.1.2_39A10023.ipsw")?;
+                let mut zip = ZipArchive::new(Cursor::new(ipsw.bytes().unwrap()))?;
+                let mut mse = zip.by_name("Firmware.MSE")?;
+                let mut out = Vec::new();
+                mse.read_to_end(&mut out)?;
+                std::fs::write("./Firmware-39A10023.MSE", &out)?;
+            }
+
+            mse::unpack("./Firmware-39A10023.MSE", &args.device)
+        }
     };
+
+    {
+        let osos = mse
+            .sections
+            .iter_mut()
+            .find(|s| &s.name == b"soso")
+            .ok_or(anyhow!("Failed to find soso section in MSE"))?;
+        let mut img1 = img1::img1_parse(&osos.body, &args.device);
+        std::fs::write("osos.bin", &img1.body)?;
+    }
 
     let rsrc = mse
         .sections
@@ -117,12 +144,19 @@ fn main() -> anyhow::Result<()> {
     // Disk swap
     info!("Doing disk swap");
 
-    if let Device::Nano6 = args.device {
-        mse_out[0x5004..][..4].copy_from_slice(b"soso");
-        mse_out[0x5144..][..4].copy_from_slice(b"ksid");
-    } else {
-        mse_out[0x5004..][..4].copy_from_slice(b"soso");
-        mse_out[0x5194..][..4].copy_from_slice(b"ksid");
+    match args.device {
+        Device::Nano6 => {
+            mse_out[0x5004..][..4].copy_from_slice(b"soso");
+            mse_out[0x5144..][..4].copy_from_slice(b"ksid");
+        }
+        Device::Nano7 => {
+            mse_out[0x5004..][..4].copy_from_slice(b"soso");
+            mse_out[0x5194..][..4].copy_from_slice(b"ksid");
+        }
+        Device::Nano7Refresh => {
+            mse_out[0x5004..][..4].copy_from_slice(b"soso");
+            mse_out[0x5194..][..4].copy_from_slice(b"ksid");
+        }
     }
 
     std::fs::write("./Firmware-repack.MSE", &mse_out)?;

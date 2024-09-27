@@ -11,6 +11,8 @@ const CODE_ADDR_N7G: [&'static str; 4] = ["08", "49", "69", "6c"];
 const CALL_ADDR_N7G: [&'static str; 4] = ["08", "49", "69", "6d"];
 const INPUT_ADDR_N7G: [&'static str; 4] = ["08", "49", "2a", "50"];
 
+const DEV_PATH: &'static str = "/dev/sdd";
+
 const CODE_ADDR: [&'static str; 4] = CODE_ADDR_N7G;
 const INPUT_ADDR: [&'static str; 4] = INPUT_ADDR_N7G;
 const CALL_ADDR: [&'static str; 4] = CALL_ADDR_N7G;
@@ -24,10 +26,10 @@ fn main() -> Result<(), Box<dyn Error>> {
         .stdout(Stdio::null())
         .stderr(Stdio::null())
         .arg("-i")
-        .arg("dec.bin")
+        .arg("../../decrypt_shellcode/scsi-stub.bin")
         .arg("-s")
         .arg("44")
-        .arg("/dev/sdc")
+        .arg(DEV_PATH)
         .arg("c6")
         .arg("96")
         .arg("01")
@@ -67,7 +69,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             .arg("temp.bin")
             .arg("-s")
             .arg(&format!("{}", CHUNK_SIZE))
-            .arg("/dev/sdc")
+            .arg(DEV_PATH)
             .arg("c6")
             .arg("96")
             .arg("01")
@@ -84,7 +86,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         Command::new("sg_raw")
             .stdout(Stdio::null())
             .stderr(Stdio::null())
-            .arg("/dev/sdc")
+            .arg(DEV_PATH)
             .arg("c6")
             .arg("96")
             .arg("03")
@@ -105,7 +107,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             .arg("temp-read.bin")
             .arg("-r")
             .arg(&format!("{}", CHUNK_SIZE))
-            .arg("/dev/sdc")
+            .arg(DEV_PATH)
             .arg("c6")
             .arg("96")
             .arg("02")

@@ -14,7 +14,7 @@ By using a malformed OTF font, we can trigger a stack overflow in CFF parsing. S
 Custom SCSI command added that can read/write memory and execute arbitrary code.
 
 ## Dependencies
-For python3:
+For python3 (Consider using a virtual env):
 ```
 pyfatfs
 fonttools
@@ -26,6 +26,7 @@ arm-none-eabi-gcc
 
 ## Supported devices:
 - iPod Nano 6th Generation
+- iPod Nano 7th Generation (2012)
 - iPod Nano 7th Generation (Mid 2015)
 
 
