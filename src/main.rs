@@ -100,16 +100,6 @@ fn main() -> anyhow::Result<()> {
         }
     };
 
-    {
-        let osos = mse
-            .sections
-            .iter_mut()
-            .find(|s| &s.name == b"soso")
-            .ok_or(anyhow!("Failed to find soso section in MSE"))?;
-        let mut img1 = img1::img1_parse(&osos.body, &args.device);
-        std::fs::write("osos.bin", &img1.body)?;
-    }
-
     let rsrc = mse
         .sections
         .iter_mut()

@@ -113,8 +113,6 @@ pub fn unpack(path: &str, device: &Device) -> Mse {
         let section_data = &firm_data[(dev_offset + 0x1000) as usize..];
         let section_data = &section_data[..data_len];
 
-        std::fs::write(&format!("./tmp-{:?}.bin", name.iter().rev().map(|s| *s as char).collect::<String>()), section_data).unwrap();
-
         let sec = MseSection {
             tag,
             name,
