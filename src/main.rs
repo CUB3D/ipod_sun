@@ -105,6 +105,13 @@ fn main() -> anyhow::Result<()> {
             std::fs::remove_file("./in-otf.bin")?;
             img1.body = rsrc_data;
         }
+        
+        if let Device::Nano7Refresh = args.device {
+            // On n7g, changing the format from 'Signed' to 'Encrypted+Signed' will result in the signature of rsrc not being checked
+            img1.update_format(0x03);
+            info!("Updated rsrc format to Encrypted+Signed to allow free modifications of rsrc");
+        }
+
         info!("Repacking RSRC Img1");
         rsrc.body.clear();
         img1.write(&mut rsrc.body);
@@ -120,7 +127,9 @@ fn main() -> anyhow::Result<()> {
     if let Device::Nano6 = args.device {
         mse_out[0x5004..][..4].copy_from_slice(b"soso");
         mse_out[0x5144..][..4].copy_from_slice(b"ksid");
-    } else {
+    } else if let Device::Nano7Refresh = args.device {
+        info!("Swap is no longer required for n7g!");
+    }  else {
         mse_out[0x5004..][..4].copy_from_slice(b"soso");
         mse_out[0x5194..][..4].copy_from_slice(b"ksid");
     }

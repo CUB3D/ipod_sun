@@ -18,17 +18,17 @@ pub extern "C" fn custom_handler() {
     let input = 0x08492a50 as *mut u8;
 
     // n6g
-    let aes_func = unsafe { core::mem::transmute::<u32, extern "C" fn(u32, u32, *mut u8, *mut u8, *mut u8, u32, u32)>(0x0822215c | 1) };
+    let aes_func = unsafe { core::mem::transmute::<u32, extern "C" fn(u32, u32, *mut u8, *mut u8, *mut u8, u32, *mut u8)>(0x0822215c | 1) };
     // n7g
-    let aes_func = unsafe { core::mem::transmute::<u32, extern "C" fn(u32, u32, *mut u8, *mut u8, *mut u8, u32, u32)>(0x0841140c | 1) };
+    let aes_func = unsafe { core::mem::transmute::<u32, extern "C" fn(u32, u32, *mut u8, *mut u8, *mut u8, u32, *mut u8)>(0x0841140c | 1) };
 
     aes_func(
         0, /* Decrypt*/
         1, /* global key */
-        core::ptr::null_mut(), /* no IV */
+        core::ptr::null_mut(), /* no user-specified key */
         input, /* In-place decrypt */
         input,
         512, /* Size*/
-        0 /* flags? */
+        core::ptr::null_mut() /* IV buffer */
     );
 }

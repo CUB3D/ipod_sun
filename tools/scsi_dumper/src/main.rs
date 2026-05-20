@@ -35,7 +35,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             .arg("-v")
             .arg("/dev/sdc")
             .arg("c6")
-            .arg("96")
+            .arg("98")
             .arg("02")
             .arg(&format!("{:02x}", b[0]))
             .arg(&format!("{:02x}", b[1]))

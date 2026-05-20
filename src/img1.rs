@@ -16,6 +16,10 @@ impl Img1 {
         out.extend_from_slice(&self.body);
         out.extend_from_slice(&self.cert);
     }
+
+    pub fn update_format(&mut self, format: u8) {
+        self.head[0x08] = format;
+    }
 }
 
 pub fn img1_parse(orig_data: &[u8], device: &Device) -> Img1 {
