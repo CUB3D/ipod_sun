@@ -17,6 +17,9 @@ use std::process::Command;
 use tracing::{info, Level};
 use zip::ZipArchive;
 
+// make sure we're using the right python command for the platform
+const PYTHON_COMMAND: &str = if cfg!(windows) { "python" } else { "python3" };
+
 #[derive(Debug, ValueEnum, Copy, Clone)]
 pub enum Device {
     Nano6,
@@ -49,7 +52,7 @@ fn main() -> anyhow::Result<()> {
     std::fs::write("./in-cff.bin", bytes)?;
 
     info!("Converting font to OTF");
-    Command::new("python")
+    Command::new(PYTHON_COMMAND)
         .arg("./helpers/cff_to_otf.py")
         .status()
         .unwrap();
@@ -96,7 +99,7 @@ fn main() -> anyhow::Result<()> {
             std::fs::write("rsrc.bin", &img1.body)?;
             std::fs::write("in-otf.bin", otf_bytes)?;
 
-            Command::new("python")
+            Command::new(PYTHON_COMMAND)
                 .arg("./helpers/fat_patch.py")
                 .status()?;
 
